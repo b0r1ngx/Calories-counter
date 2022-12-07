@@ -30,31 +30,39 @@ let toggleButton = (button, isDisabled) => (
     button.disabled = isDisabled
 );
 
-let observeOnInputChange = (input, flag) => {
-    input.addEventListener('input', function () {
-        if (input.value > 0) {
-            flag = true;
-        }
-
-        if (ageIsEntered && heightIsEntered && weightIsEntered) {
-            console.log('1');
-            toggleButton(submitButton, false);
-            toggleButton(resetButton, false);
-        } else if (ageIsEntered || heightIsEntered || weightIsEntered)  {
-            console.log('2');
-            toggleButton(submitButton, false);
-            toggleButton(resetButton, true);
-        } else {
-            console.log('3');
-            toggleButton(submitButton, true);
-            toggleButton(resetButton, true);
-        }
-    })
+let recomposeButtons = () => {
+    if (ageIsEntered && heightIsEntered && weightIsEntered) {
+        toggleButton(submitButton, false);
+        toggleButton(resetButton, false);
+    } else if (ageIsEntered || heightIsEntered || weightIsEntered) {
+        toggleButton(submitButton, true);
+        toggleButton(resetButton, false);
+    } else {
+        toggleButton(submitButton, true);
+        toggleButton(resetButton, true);
+    }
 };
 
-observeOnInputChange(ageInput, ageIsEntered);
-observeOnInputChange(heightInput, heightIsEntered);
-observeOnInputChange(weightInput, weightIsEntered);
+ageInput.addEventListener('input', function () {
+    if (ageInput.value > 0) {
+        ageIsEntered = true;
+    }
+    recomposeButtons();
+});
+
+heightInput.addEventListener('input', function () {
+    if (heightInput.value > 0) {
+        heightIsEntered = true;
+    }
+    recomposeButtons();
+});
+
+weightInput.addEventListener('input', function () {
+    if (weightInput.value > 0) {
+        weightIsEntered = true;
+    }
+    recomposeButtons();
+});
 
 let round = (x) => Math.round(x);
 
@@ -92,7 +100,7 @@ let getCoefficientFromInputActivityType = () => (
         ]
 );
 
-let updateResultWindow = (maintenance, loss, gain) => {
+let updateAndShowResultWindow = (maintenance, loss, gain) => {
     document.querySelector('#calories-norm').textContent = maintenance;
     document.querySelector('#calories-minimal').textContent = loss;
     document.querySelector('#calories-maximal').textContent = gain;
@@ -113,11 +121,13 @@ submitButton.addEventListener('click', function (evt) {
     const [age, height, weight] = getInputValues();
     const coefficient = getCoefficientFromInputActivityType();
     const [maintenance, loss, gain] = calculateWeightResults(isFemale, age, height, weight, coefficient);
-    updateResultWindow(maintenance, loss, gain);
+    updateAndShowResultWindow(maintenance, loss, gain);
 });
 
 resetButton.addEventListener('click', function (evt) {
     evt.preventDefault();
     resetToDefaults();
-    resultWindow.classList.add('counter__result--hidden')
+    toggleButton(submitButton, true);
+    toggleButton(resetButton, true);
+    resultWindow.classList.add('counter__result--hidden');
 });
