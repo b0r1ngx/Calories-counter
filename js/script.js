@@ -14,6 +14,48 @@ const ACTIVITY_COEFFICIENTS = {
     'max': 1.9
 };
 
+const ageInput = document.querySelector('input[name="age"]');
+const heightInput = document.querySelector('input[name="height"]');
+const weightInput = document.querySelector('input[name="weight"]');
+
+let ageIsEntered = false;
+let heightIsEntered = false;
+let weightIsEntered = false;
+
+const resultWindow = document.querySelector('.counter__result')
+const submitButton = document.querySelector('.form__submit-button');
+const resetButton = document.querySelector('.form__reset-button');
+
+let toggleButton = (button, isDisabled) => (
+    button.disabled = isDisabled
+);
+
+let observeOnInputChange = (input, flag) => {
+    input.addEventListener('input', function () {
+        if (input.value > 0) {
+            flag = true;
+        }
+
+        if (ageIsEntered && heightIsEntered && weightIsEntered) {
+            console.log('1');
+            toggleButton(submitButton, false);
+            toggleButton(resetButton, false);
+        } else if (ageIsEntered || heightIsEntered || weightIsEntered)  {
+            console.log('2');
+            toggleButton(submitButton, false);
+            toggleButton(resetButton, true);
+        } else {
+            console.log('3');
+            toggleButton(submitButton, true);
+            toggleButton(resetButton, true);
+        }
+    })
+};
+
+observeOnInputChange(ageInput, ageIsEntered);
+observeOnInputChange(heightInput, heightIsEntered);
+observeOnInputChange(weightInput, weightIsEntered);
+
 let round = (x) => Math.round(x);
 
 let calculateWeightResults = (isFemale, age, height, weight, coefficient) => {
@@ -37,9 +79,9 @@ let isFemalePicked = () => (
 );
 
 let getInputValues = () => ([
-    document.querySelector('input[name="age"]').value,
-    document.querySelector('input[name="height"]').value,
-    document.querySelector('input[name="weight"]').value
+    ageInput.value,
+    heightInput.value,
+    weightInput.value
 ]);
 
 let getCoefficientFromInputActivityType = () => (
@@ -64,10 +106,6 @@ let resetToDefaults = () => {
     document.querySelector('input[name="weight"]').value = '';
     document.querySelector('input[name="activity"]').checked = true;
 };
-
-const resultWindow = document.querySelector('.counter__result')
-const submitButton = document.querySelector('.form__submit-button');
-const resetButton = document.querySelector('.form__reset-button');
 
 submitButton.addEventListener('click', function (evt) {
     evt.preventDefault();
